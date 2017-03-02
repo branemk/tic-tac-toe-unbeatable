@@ -1,0 +1,71 @@
+ body {}
+ 
+ #board {
+     height: 70%;
+     width: 100%;
+ }
+ 
+ #boardcontainer {
+     height: 100vh;
+     width: 60vw;
+ }
+ 
+ .tile {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     font-size: 300%;
+     font-weight: 500;
+     color: white;
+     width: 30%;
+     height: 30%;
+     margin: 2px;
+     float: left;
+     border-radius: 10%;
+     background-color: crimson;
+ }
+ 
+ .clear {
+     clear: both;
+ }
+ 
+ #button {
+     border: 2px solid #dc143c;
+     padding: 5px;
+     border-radius: 15px;
+     color: crimson;
+     margin-bottom: 15px;
+ }
+ 
+ #button:hover {
+     cursor: pointer;
+     background-color: crimson;
+     color: white;
+ }
+ 
+ @media only screen (min-device-width: 1024px) and (max-device-width: 1366px) {
+     #boardcontainer {
+         width: 100vw;
+     }
+     #board {
+         height: 50%;
+     }
+ }
+ 
+ @media only screen(min-device-width: 800px) and (max-device-width: 1280px) {
+     #boardcontainer {
+         width: 100vw;
+     }
+     #board {
+         height: 50%;
+     }
+ }
+ 
+ @media (max-width: 767px) {
+     #boardcontainer {
+         width: 100vw;
+     }
+     #board {
+         height: 50%;
+     }
+ }

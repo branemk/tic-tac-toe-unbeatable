@@ -99,7 +99,7 @@ function checkWin() {
     } else if ((content[1] === content[5] && content[5] === content[9]) && (content[1] !== " " && content[5] !== " " && content[9] !== " ")) {
         showWinner(content[1]);
 
-    } else if ((content[3] === content[5] && content[5] == content[7]) && (content[3] !== " " && content[5] !== " " && content[7] !== " ")){
+    } else if ((content[3] === content[5] && content[5] == content[7]) && (content[3] !== " " && content[5] !== " " && content[7] !== " ")) {
         showWinner(content[3]);
 
     }

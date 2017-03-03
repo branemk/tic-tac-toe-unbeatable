@@ -20,14 +20,24 @@
 
 
 <body>
+    
     <div class="container d-flex flex-column justify-content-center align-items-center" id="boardcontainer">
+            <div class="d-flex justify-content-center align-items-center">
+            <div class="mode modeactive">Normal mode</div>
+             <div class="mode ">Legend mode</div>
+        </div>
+       
+  
+        
         <div class="d-flex justify-content-center align-items-center" id="options">
+             <div class="score d-flex justify-content-center align-items-center" id="scoreX">0</div>
             <div class="options optionactive" id="optionx">X</div>
             <div class="options" id="optiony" >O</div>
-
+              <div class="score d-flex justify-content-center align-items-center" id="scoreO" >0</div>
         </div>
         <div id="button">New Game</div>
         <div class="row d-flex justify-content-center align-items-center" id="board">
+            <h2 id="result"></h2>
             <div class="tile col-3" id="tile1"> </div>
             <div class="tile col-3" id="tile2"> </div>
             <div class="tile col-3" id="tile3"> </div>

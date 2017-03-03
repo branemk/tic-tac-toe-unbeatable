@@ -5,6 +5,16 @@ $("#button").click(function () {
     startnewGame();
 });
 
+$(".mode").click(function () {
+
+    $(".modeactive").each(function () {
+        $(this).removeClass("modeactive");
+    });
+
+
+    $(this).addClass("modeactive");
+});
+
 $(".options").click(function () {
 
     $(".optionactive").each(function () {
@@ -22,14 +32,20 @@ var game = {
     hasresult: false,
     computer: "O",
     user: "X",
-    comfirst: false
+    comfirst: false,
+    modenormal: 'Normal mode',
+    modelegend: 'Legend mode'
 };
 
 function startnewGame() {
     var turn = $(".optionactive").text();
 
     if (turn === "O") {
+        game.computer = "X";
+        game.user = "O";
         $(".tile").text(" ");
+        $("#result").text("").removeClass("animated zoomIn");
+         $(".tile").css("opacity","1.0");
         game.turn = 'computer';
         game.moves = 0;
         game.comfirst = true;
@@ -37,23 +53,27 @@ function startnewGame() {
         $('.tile').removeClass('animated flipInY');
         computerMove();
     } else {
+        game.computer = "O";
+        game.user = "X";
         $(".tile").text(" ");
+        $("#result").text("").removeClass("animated zoomIn");
+         $(".tile").css("opacity","1.0");
         game.turn = 'user';
         game.moves = 0;
         game.hasresult = false;
         game.comfirst = false;
-         $('.tile').removeClass('animated flipInY');
+        $('.tile').removeClass('animated flipInY');
     }
 }
 
 $(".tile").click(function () {
     if (game.turn === 'user') {
         if ($(this).text() === " ") {
-            $(this).text("X").addClass('animated flipInY');
+            $(this).text(game.user).addClass('animated flipInY');
             game.turn = 'computer';
             game.moves += 1;
             checkWin();
-              console.log('moves '+game.moves);
+     
             if (game.moves < 9 && !game.hasresult) {
                 setTimeout(computerMove, 500);
             }
@@ -62,59 +82,88 @@ $(".tile").click(function () {
 });
 
 function computerMove() {
-    console.log('moves number '+game.moves);
+    
     if (game.comfirst) {
         game.comfirst = false;
         Makefirtsmove();
     } else {
         if (game.moves === 2) {
+            //calculate second move when computer plays first
             MakeSecondMove();
         } else {
+            //if there are more than two moves when computer plays first use mininax
+           
             Makemove(game.computer);
         }
     }
 }
-
+//second move when computer plays first , we are not using minimax here because performance
 function MakeSecondMove() {
-    console.log('second move');
-    var tiles = $('.tile');
-    var usermove;
-    for (var i = 1; i <= tiles.length; i++) {
-        if ($('#tile' + i).text() === 'X') {
-            usermove = i;
+    if ($(".modeactive").text() === game.modenormal) {
+        var randomnormal = Math.floor((Math.random() * 9) + 1);
+        if ($('#tile' + randomnormal).text() === ' ') {
+            $('#tile' + randomnormal).text(game.computer).addClass('animated flipInY');
+            game.moves += 1;
+            game.turn = 'user';
+            checkWin();
+        } else {
+            MakeSecondMove();
         }
+    } else {
 
-    }
-    console.log('usermove '+usermove);
-    if (usermove === 5) {
-        var moves = ['1', '3', '7', '9'];
-        var random = Math.floor(Math.random() * 4);
-        if ($('#tile' + moves[random]).text() === ' ') {
-            $('#tile' + moves[random]).text('O').addClass('animated pulse');
-            game.moves += 1;
-            game.turn = 'user';
-            checkWin();
-        } else MakeSecondMove();
-    }else if(usermove === 1 || usermove === 3 || usermove === 7 || usermove === 9 || usermove === 2 || usermove === 4 || usermove === 6 || usermove === 8 ){
-        var moves1 = ['1', '3','5','7', '9'];
-        var random1 = Math.floor(Math.random() * 4);
-          if ($('#tile' + moves1[random1]).text() === ' ') {
-            $('#tile' + moves1[random1]).text('O').addClass('animated flipInY');
-            game.moves += 1;
-            game.turn = 'user';
-            checkWin();
-        } else MakeSecondMove();
+        var tiles = $('.tile');
+        var usermove;
+        for (var i = 1; i <= tiles.length; i++) {
+            if ($('#tile' + i).text() === game.user) {
+                usermove = i;
+            }
+
+        }
+      
+        if (usermove === 5) {
+            var moves = ['1', '3', '7', '9'];
+            var random = Math.floor(Math.random() * 4);
+            if ($('#tile' + moves[random]).text() === ' ') {
+                $('#tile' + moves[random]).text(game.computer).addClass('animated pulse');
+                game.moves += 1;
+                game.turn = 'user';
+                checkWin();
+            } else MakeSecondMove();
+        } else if (usermove === 1 || usermove === 3 || usermove === 7 || usermove === 9 || usermove === 2 || usermove === 4 || usermove === 6 || usermove === 8) {
+            var moves1 = ['1', '3', '5', '7', '9'];
+            var random1 = Math.floor(Math.random() * 4);
+            if ($('#tile' + moves1[random1]).text() === ' ') {
+                $('#tile' + moves1[random1]).text(game.computer).addClass('animated flipInY');
+                game.moves += 1;
+                game.turn = 'user';
+                checkWin();
+            } else MakeSecondMove();
+        }
     }
 }
-
+//first move when computer plays first
 function Makefirtsmove() {
-    var moves = ['1', '3', '5', '7', '9'];
-    var random = Math.floor(Math.random() * 5);
 
-    $('#tile' + moves[random]).text('O').addClass('animated flipInY');
-    game.moves += 1;
-    game.turn = 'user';
-    checkWin();
+    if ($(".modeactive").text() === game.modenormal) {
+        
+        var randomnormal = Math.floor((Math.random() * 9) + 1);
+        $('#tile' + randomnormal).text(game.computer).addClass('animated flipInY');
+        game.moves += 1;
+        game.turn = 'user';
+        checkWin();
+
+    } else {
+        var moves = ['1', '3', '5', '7', '9'];
+        var random = Math.floor(Math.random() * 5);
+
+
+
+
+        $('#tile' + moves[random]).text(game.computer).addClass('animated flipInY');
+        game.moves += 1;
+        game.turn = 'user';
+        checkWin();
+    }
 }
 
 function Makemove(player) {
@@ -126,8 +175,10 @@ function Makemove(player) {
 
     }
     if (game.moves < 2) {
+         //if user plays first we calculate first computer move
         random = calculateFirstMove(content);
     } else {
+        //calculate move with minimax algorithm
         random = findBestMove(content, game.computer);
     }
 
@@ -138,7 +189,7 @@ function Makemove(player) {
 
 
     if ($('#tile' + random).text() === ' ') {
-        $('#tile' + random).text('O').addClass('animated flipInY');
+        $('#tile' + random).text(game.computer).addClass('animated flipInY');
         game.moves += 1;
         game.turn = 'user';
         checkWin();
@@ -189,18 +240,26 @@ function checkWin() {
     }
 
     if (!game.hasresult && game.moves === 9) {
-        alert("It's Draw");
+        //alert("It's Draw");
+         $(".tile").css("opacity","0.1");
+        $("#result").text("It's Draw!").addClass("animated zoomIn");
     }
 }
 
 function showWinner(w) {
 
     game.hasresult = true;
-    alert(w + " is a winner");
+    $("#score" + w).text(parseInt($("#score" + w).text()) + 1);
+    //alert(w + " is a winner");
+          $(".tile").css("opacity","0.1");
+    if($(".optionactive").text() === w){
+        $("#result").text("You Win!").addClass("animated zoomIn");
+    }else{$("#result").text("You Lose! "+ w+ " is a winner").addClass("animated zoomIn");}
+        
 
 
 }
-
+//check win for minmax
 function checkIfWin(board, player) {
     var content = [];
     var result = false;
@@ -248,11 +307,11 @@ function checkIfWin(board, player) {
     // console.log("winner ", result);
     return result;
 }
-
+//minimax algorithm 
 function calculateWinner(player, board) {
 
 
-    console.log("Min max for  " + board);
+   
     if (checkIfWin(board, game.user)) {
 
         return -10;
@@ -315,7 +374,7 @@ function findBestMove(board, player) {
     for (var i = 1; i < board.length; i++) {
         if (board[i] === ' ') {
             board[i] = player;
-            console.log("Try number " + i + " " + board);
+            //console.log("Try number " + i + " " + board);
             moveVal = calculateWinner(game.user, board);
             board[i] = " ";
 
@@ -350,24 +409,27 @@ function areMovesLeft(b) {
 }
 
 function calculateFirstMove(board) {
-    var tile;
-    for (var i = 1; i < board.length; i++) {
-        if (board[i] !== ' ') {
+    if ($(".modeactive").text() === game.modenormal) {
+        return Math.floor((Math.random() * 9) + 1);
+    } else {
+        var tile;
+        for (var i = 1; i < board.length; i++) {
+            if (board[i] !== ' ') {
 
-            tile = i;
+                tile = i;
 
+            }
+        }
+        //make perfect move
+        //console.log('tile '+tile);
+        var moves = ['1', '3', '7', '9'];
+        if (tile === 1 || tile === 3 || tile === 7 || tile === 9) return 5;
+        else if (tile === 2 || tile === 4) return 1;
+        else if (tile === 6 || tile === 8) return 9;
+        else if (tile === 5) {
+            return moves[Math.floor(Math.random() * 3)];
         }
     }
-    //make perfect move
-    //console.log('tile '+tile);
-    var moves = ['1', '3', '7', '9'];
-    if (tile === 1 || tile === 3 || tile === 7 || tile === 9) return 5;
-    else if (tile === 2 || tile === 4) return 1;
-    else if (tile === 6 || tile === 8) return 9;
-    else if (tile === 5) {
-        return moves[Math.floor(Math.random() * 3)];
-    }
-
 
 
 

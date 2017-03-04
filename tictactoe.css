@@ -84,7 +84,7 @@
     border: 2px solid #00796B;
      padding: 1px 10px;
     background-color: #00796B;
-     border-radius: 10%;
+     border-radius: 5%;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 #result {

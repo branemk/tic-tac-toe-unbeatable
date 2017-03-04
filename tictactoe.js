@@ -144,8 +144,9 @@ function MakeSecondMove() {
 }
 //first move when computer plays first
 function Makefirtsmove() {
-
+    //When we play in normal mode and computer is first, we put first two moves at random fields
     if ($(".modeactive").text() === game.modenormal) {
+        
         if(game.moves === 4){
              game.comfirst = false;
         }

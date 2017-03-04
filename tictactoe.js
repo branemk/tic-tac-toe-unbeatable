@@ -92,6 +92,49 @@ function computerMove() {
 
 }
 
+//computer first move when computer plays first
+function CalculateComputerFirstMove() {
+
+    if ($(".modeactive").text() === game.modelegend) {
+
+        game.comfirst = false;
+        Makefirtsmove();
+
+    } else if ($(".modeactive").text() === game.modenormal) {
+        //on normal mode first two computer moves are random
+       
+           
+        RandomMove();
+         if (game.moves === 3) {
+            game.comfirst = false;
+        }
+    }
+}
+
+ //first move when computer plays first
+function Makefirtsmove() {
+
+    var moves = ['1', '3', '5', '7', '9'];
+    var random = Math.floor(Math.random() * 5);
+
+    PutComputerValueInTile(moves[random]);
+
+}
+
+function ComputerMakeNextMove() {
+    if (game.moves === 2) {
+       
+        //calculate second computer move when computer plays first on legend mode,if it's normal mode this function will be called when there are 5 moves(because we are settting game.comfirst to false when there are 4 moves in CalculateComputerFirstMove() ) so we calculate 
+
+        MakeSecondMove();
+    } else {
+
+       
+        Makemove(game.computer);
+    }
+
+}
+
 //second move when computer plays first , we are not using minimax here because performance
 function MakeSecondMove() {
     if ($(".modeactive").text() === game.modenormal) {
@@ -126,15 +169,6 @@ function MakeSecondMove() {
         }
     }
 }
-//first move when computer plays first
-function Makefirtsmove() {
-
-    var moves = ['1', '3', '5', '7', '9'];
-    var random = Math.floor(Math.random() * 5);
-
-    PutComputerValueInTile(moves[random]);
-
-}
 
 function Makemove(player) {
     var tiles = $('.tile');
@@ -163,7 +197,183 @@ function Makemove(player) {
     } else Makemove();
 }
 
+//computer first move when user plays first
+function calculateFirstMove(board) {
+    if ($(".modeactive").text() === game.modenormal) {
 
+        return Math.floor((Math.random() * 9) + 1);
+
+    } else {
+        var tile = GetUserFirstMove();
+
+        //make perfect move
+      
+        var moves = ['1', '3', '7', '9'];
+        if (tile === 1 || tile === 3 || tile === 7 || tile === 9) return 5;
+        else if (tile === 2 || tile === 4) return 1;
+        else if (tile === 6 || tile === 8) return 9;
+        else if (tile === 5) {
+            return moves[Math.floor(Math.random() * 3)];
+        }
+    }
+
+
+
+}
+
+//minimax algorithm 
+function calculateWinner(player, board, depth) {
+
+    depth += 1;
+
+    if (checkIfWin(board, game.user)) {
+        
+        return depth - 10;
+
+    } else if (checkIfWin(board, game.computer)) {
+     
+        return 10 - depth;
+
+    } else if (areMovesLeft(board) === false) {
+
+        return 0;
+
+    }
+
+
+    if (player === game.computer) {
+
+        var best = -1000;
+        for (var i = 1; i <= board.length; i++) {
+            if (board[i] === ' ') {
+
+                board[i] = player;
+
+                best = Math.max(best, calculateWinner(game.user, board, depth));
+
+                board[i] = " ";
+
+
+
+            }
+
+
+
+        }
+        return best;
+
+    } else {
+        var bestuser = 1000;
+        for (var n = 1; n <= board.length; n++) {
+            if (board[n] === ' ') {
+
+                board[n] = player;
+
+                bestuser = Math.min(bestuser, calculateWinner(game.computer, board, depth));
+
+                board[n] = " ";
+
+
+            }
+
+
+        }
+        return bestuser;
+    }
+
+
+
+
+}
+
+function findBestMove(board, player) {
+    var bestVal = -1000;
+    var bestMove;
+    var moveVal;
+    for (var i = 1; i < board.length; i++) {
+        if (board[i] === ' ') {
+            board[i] = player;
+            
+            moveVal = calculateWinner(game.user, board, 0);
+            board[i] = " ";
+            
+
+            if (moveVal >= bestVal) {
+
+                bestMove = i;
+                bestVal = moveVal;
+            }
+        }
+    }
+
+   
+    return bestMove;
+}
+
+
+
+function areMovesLeft(b) {
+
+
+    for (var i = 1; i <= b.length; i++) {
+        if (b[i] === ' ') {
+            return true;
+
+        }
+
+
+    }
+
+    return false;
+}
+
+
+function RandomMove() {
+  
+    var randomnormal = Math.floor((Math.random() * 9) + 1);
+    if(game.comfirst){
+         
+        var moves = ['2','4','5','6','8'];
+        randomnormal = moves[Math.floor(Math.random() * 4)];
+    }
+    if (TileIsEmpty(randomnormal)) {
+
+        PutComputerValueInTile(randomnormal);
+
+    } else {
+        RandomMove();
+    }
+}
+
+
+function TileIsEmpty(index) {
+
+    if ($('#tile' + index).text() === ' ') {
+
+        return true;
+
+    } else return false;
+}
+
+function PutComputerValueInTile(index) {
+    $('#tile' + index).text(game.computer).addClass('animated flipInY');
+    game.moves += 1;
+    game.turn = 'user';
+    checkWin();
+}
+
+
+
+function GetUserFirstMove() {
+    var tiles = $('.tile');
+
+    for (var i = 1; i <= tiles.length; i++) {
+        if ($('#tile' + i).text() === game.user) {
+            return i;
+        }
+
+    }
+}
 
 function checkWin() {
 
@@ -274,204 +484,4 @@ function checkIfWin(board, player) {
 
     
     return result;
-}
-//minimax algorithm 
-function calculateWinner(player, board, depth) {
-
-    depth += 1;
-
-    if (checkIfWin(board, game.user)) {
-        
-        return depth - 10;
-
-    } else if (checkIfWin(board, game.computer)) {
-     
-        return 10 - depth;
-
-    } else if (areMovesLeft(board) === false) {
-
-        return 0;
-
-    }
-
-
-    if (player === game.computer) {
-
-        var best = -1000;
-        for (var i = 1; i <= board.length; i++) {
-            if (board[i] === ' ') {
-
-                board[i] = player;
-
-                best = Math.max(best, calculateWinner(game.user, board, depth));
-
-                board[i] = " ";
-
-
-
-            }
-
-
-
-        }
-        return best;
-
-    } else {
-        var bestuser = 1000;
-        for (var n = 1; n <= board.length; n++) {
-            if (board[n] === ' ') {
-
-                board[n] = player;
-
-                bestuser = Math.min(bestuser, calculateWinner(game.computer, board, depth));
-
-                board[n] = " ";
-
-
-            }
-
-
-        }
-        return bestuser;
-    }
-
-
-
-
-}
-
-function findBestMove(board, player) {
-    var bestVal = -1000;
-    var bestMove;
-    var moveVal;
-    for (var i = 1; i < board.length; i++) {
-        if (board[i] === ' ') {
-            board[i] = player;
-            
-            moveVal = calculateWinner(game.user, board, 0);
-            board[i] = " ";
-            
-
-            if (moveVal >= bestVal) {
-
-                bestMove = i;
-                bestVal = moveVal;
-            }
-        }
-    }
-
-   
-    return bestMove;
-}
-
-
-
-function areMovesLeft(b) {
-
-
-    for (var i = 1; i <= b.length; i++) {
-        if (b[i] === ' ') {
-            return true;
-
-        }
-
-
-    }
-
-    return false;
-}
-//computer first move when user plays first
-function calculateFirstMove(board) {
-    if ($(".modeactive").text() === game.modenormal) {
-
-        return Math.floor((Math.random() * 9) + 1);
-
-    } else {
-        var tile = GetUserFirstMove();
-
-        //make perfect move
-      
-        var moves = ['1', '3', '7', '9'];
-        if (tile === 1 || tile === 3 || tile === 7 || tile === 9) return 5;
-        else if (tile === 2 || tile === 4) return 1;
-        else if (tile === 6 || tile === 8) return 9;
-        else if (tile === 5) {
-            return moves[Math.floor(Math.random() * 3)];
-        }
-    }
-
-
-
-}
-
-function RandomMove() {
-   
-    var randomnormal = Math.floor((Math.random() * 9) + 1);
-    if (TileIsEmpty(randomnormal)) {
-
-        PutComputerValueInTile(randomnormal);
-
-    } else {
-        RandomMove();
-    }
-}
-//computer first move when computer plays first
-function CalculateComputerFirstMove() {
-
-    if ($(".modeactive").text() === game.modelegend) {
-
-        game.comfirst = false;
-        Makefirtsmove();
-
-    } else if ($(".modeactive").text() === game.modenormal) {
-        //on normal mode first two computer moves are random
-        if (game.moves === 4) {
-            game.comfirst = false;
-        }
-
-        RandomMove();
-    }
-}
-
-function ComputerMakeNextMove() {
-    if (game.moves === 2) {
-       
-        //calculate second computer move when computer plays first on legend mode,if it's normal mode this function will be called when there are 5 moves(because we are settting game.comfirst to false when there are 4 moves in CalculateComputerFirstMove() ) so we calculate 
-
-        MakeSecondMove();
-    } else {
-
-       
-        Makemove(game.computer);
-    }
-
-}
-
-function TileIsEmpty(index) {
-
-    if ($('#tile' + index).text() === ' ') {
-
-        return true;
-
-    } else return false;
-}
-
-function PutComputerValueInTile(index) {
-    $('#tile' + index).text(game.computer).addClass('animated flipInY');
-    game.moves += 1;
-    game.turn = 'user';
-    checkWin();
-}
-
-
-
-function GetUserFirstMove() {
-    var tiles = $('.tile');
-
-    for (var i = 1; i <= tiles.length; i++) {
-        if ($('#tile' + i).text() === game.user) {
-            return i;
-        }
-
-    }
 }
